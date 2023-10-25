@@ -138,15 +138,13 @@ module.exports = function(app, shopData) {
     });
     app.post('/UserDeleted', function (req,res) {
         //searching in the database
-        //res.send("You searched for: " + req.query.keyword);
-        let sqlquery = "SELECT * FROM UserDetails";
         let query = "DELETE FROM UserDetails WHERE username LIKE '%" + req.body.keyword + "%'";
         // execute delete query
         db.query(query, (err, result) => {
             if (err) {
                 res.redirect('./'); 
             }else {
-                res.redirect('/listusers'); 
+                res.redirect('./listusers'); 
             }
         });                                                                 
     }); 
