@@ -1,8 +1,10 @@
 // Import the modules we need
 var express = require ('express')
 var ejs = require('ejs')
-var bodyParser= require ('body-parser')
+var bodyParser= require ('body-parser');
 const mysql = require('mysql');
+var session = require ('express-session');
+
 
 // Create the express application object
 const app = express()
@@ -46,5 +48,13 @@ var shopData = {shopName: "Bertie's Books Wholesale Shop"}
 // Requires the main.js file inside the routes folder passing in the Express app and data as arguments.  All the routes will go in this file
 require("./routes/main")(app, shopData);
 
+// Create a session
+app.use(session({
+    secret: 'somerandomstuff', resave: false, saveUninitialized: false, cookie: {
+            expires: 600000
+        }
+    }));
+
 // Start the web app listening
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+

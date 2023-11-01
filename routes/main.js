@@ -1,4 +1,11 @@
 module.exports = function(app, shopData) {
+    const redirectLogin = (req, res, next) => { 
+        if (!req.session.userId ) {
+            res.redirect('./login') 
+        } else { 
+            next (); 
+        }
+    }
 
     // Handle our routes
     app.get('/',function(req,res){
@@ -68,7 +75,7 @@ module.exports = function(app, shopData) {
     }); 
 
 
-    app.get('/list', function(req, res) {
+    app.get('/list', function (req, res) {
         let sqlquery = "SELECT * FROM books"; // query database to get all the books
         // execute sql query
         db.query(sqlquery, (err, result) => {
@@ -81,7 +88,7 @@ module.exports = function(app, shopData) {
          });
     });
 
-    app.get('/listusers', function (req,res){
+    app.get('/listusers', redirectLogin, function (req,res){
         let sqlquery = "SELECT * FROM UserDetails"; // query database to get all the user data
         // execute sql query
         db.query(sqlquery, (err, result) => {
@@ -113,8 +120,37 @@ module.exports = function(app, shopData) {
         res.render('login.ejs', shopData);
     });
     app.post('/loggedin', function(req,res){
-        let sqlquery = "SELECT * FROM books WHERE username LIKE '%" + req.query.username + "%'";
+        const bcrypt = require('bcrypt');
+        let sqlquery = "SELECT hashedPassword FROM UserDetails WHERE username = '?' ";
+        let newrecord = req.body.username;
+        db.query(sqlquery, newrecord, (err, result) => {
+            if (err) {
+                return console.error(err);
+            } else {
+                // Compare the password supplied with the password in the database
+                bcrypt.compare(req.body.password, result[0].hashedPassword, function(err, result) {
+                    if (err) {
+                        // TODO: Handle error
+                        return console.error(err.message);
+                    } else if(result == true) {
+                        // TODO: Send message
+                        res.send('Successful logging in!');
+                        // Save user session here, when login is successful
+                        req.session.userId = req.body.username;
+                    } else {
+                        // TODO: Send message
+                        res.send('Please try again');
+                    } 
+                });  
+            };
+        });
     });
+
+    app.get('/logout', redirectLogin, (req,res) => { req.session.destroy(err => {
+        if (err) {
+        return res.redirect('./') }
+        res.send('you are now logged out. <a href='+'./'+'>Home</a>');
+        }) })
 
 
 
@@ -122,7 +158,7 @@ module.exports = function(app, shopData) {
         let sqlquery = "INSERT INTO UserDetails (username, firstName, lastName, email, hashedPassword) VALUES (?, ?, ?, ?, ?)";
         let newrecord = [req.body.username, req.body.firstName, req.body.lastName, req.body.email, req.body.hashedPassword];
         result = 'Hello '+ req.body.first + ' '+ req.body.last +' you are now registered! We will send an email to you at ' + req.body.email;
-        result += 'Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
+        //result += 'Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
         
         db.query(sqlquery, newrecord, (err, result) => {
             if (err) {
@@ -148,5 +184,6 @@ module.exports = function(app, shopData) {
             }
         });                                                                 
     }); 
+
 
 }
