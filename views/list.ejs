@@ -5,11 +5,17 @@
     <link rel="stylesheet"  type="text/css" href="/main.css" />
   </head>
   <body>
-    <h1><%=shopName%> Shop</h1>
-    <h2>Here are the books that we sell:</h2>
+    <h1><%=shopName%></h1>
+    <h2>Here are all the One Piece cards!</h2>
     <ul>
-      <% availableBooks.forEach(function(book) { %>
-        <li><%= book.name %>, £<%=book.price%> </li>
+      <% availableCards.forEach(function(cards) { %>
+        <li><%= cards.CardName %>,
+            <%= cards.CardType %>,
+            <%= cards.CardColour %>,
+            <%= cards.CardCost %>,
+            <%= cards.CardRarity %>,
+            £<%= cards.CardPriceinMart%> 
+        </li>
       <% }) %>
     </ul>
     </body>

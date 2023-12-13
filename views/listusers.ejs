@@ -8,11 +8,11 @@
     <h1><%=shopName%> Shop</h1>
     <h2>Here are the users we have:</h2>
     <ul>
-      <% availableUsers.forEach(function(UserDetails) { %>
-        <li>Username: <%= UserDetails.username %>, 
-            First name: <%=UserDetails.firstname%>,
-            Last name: <%=UserDetails.lastname%>
-            Email: <%=UserDetails.email%></li>
+      <% availableUsers.forEach(function(users) { %>
+        <li>Username: <%= users.username %>, 
+            First name: <%=users.firstname%>,
+            Last name: <%=users.lastname%>
+            Email: <%=users.email%></li>
       <% }) %>
     </ul>
     </body>
